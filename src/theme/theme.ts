@@ -4,18 +4,18 @@ import { createTheme } from '@mui/material/styles';
 const theme = (mode: 'light' | 'dark') => {
   const colors = {
     primary: {
-      light: '#EDE7F6',
-      main: '#7352C7',
-      dark: '#5E35B1',
-      200: '#B39DDB',
-      800: '#4527A0'
+      light: '#E3F2FD',
+      main: '#1E88E5', // Blue
+      dark: '#0D47A1',
+      200: '#90CAF9',
+      800: '#0D47A1'
     },
     secondary: {
-      light: '#E3F2FD',
-      main: '#2196F3',
-      dark: '#1E88E5',
-      200: '#90CAF9',
-      800: '#1565C0'
+      light: '#FFF3E0',
+      main: '#FF9800', // Orange
+      dark: '#EF6C00',
+      200: '#FFCC80',
+      800: '#EF6C00'
     },
     success: {
       light: '#B9F6CA',
