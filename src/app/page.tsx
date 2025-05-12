@@ -16,11 +16,15 @@ import {
   Slide,
   InputAdornment,
   Chip,
-  Avatar
+  Avatar,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import MainCard from '@/components/ui/MainCard';
 import LandingHeader from '@/components/ui/LandingHeader';
+import MapMarker from '@/components/ui/MapMarker';
+import GoogleMapBackground from '@/components/ui/GoogleMapBackground';
 
 // Icons
 import SearchIcon from '@mui/icons-material/Search';
@@ -30,6 +34,11 @@ import HomeIcon from '@mui/icons-material/Home';
 import LocalCafeIcon from '@mui/icons-material/LocalCafe';
 import LocalMallIcon from '@mui/icons-material/LocalMall';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import MyLocationIcon from '@mui/icons-material/MyLocation';
+import StarIcon from '@mui/icons-material/Star';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
 
 // Styled components
 const HeroSection = styled(Box)(({ theme }) => ({
@@ -43,10 +52,9 @@ const HeroSection = styled(Box)(({ theme }) => ({
 
 const SearchFormWrapper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
-  borderRadius: '24px',
-  backdropFilter: 'blur(10px)',
-  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+  borderRadius: '8px',
+  backgroundColor: 'white',
+  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.2)',
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(3),
   }
@@ -187,11 +195,20 @@ export default function Home() {
       {/* Landing Header */}
       <LandingHeader transparent />
       
-      {/* Hero Section with Search */}
-      <HeroSection>
-        <Container maxWidth="lg">
+      {/* Hero Section with Map and Search */}
+      <HeroSection
+        sx={{
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Google Map Background */}
+        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 }}>
+          <GoogleMapBackground />
+        </Box>
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <Grid container spacing={4} sx={{ minHeight: '100vh', alignItems: 'center' }}>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={5}>
               <Fade in={animationTriggered.hero} timeout={1000}>
                 <Box sx={{ textAlign: { xs: 'center', md: 'left' }, mt: { xs: 8, md: 0 } }}>
                   <Typography variant="h1" color="white" gutterBottom>
@@ -239,85 +256,398 @@ export default function Home() {
               </Fade>
             </Grid>
             
-            <Grid item xs={12} md={6}>
-              <Slide direction="left" in={animationTriggered.hero} timeout={800}>
-                <SearchFormWrapper elevation={3}>
-                  <Typography variant="h3" gutterBottom sx={{ mb: 3 }}>
-                    Search Across Categories
-                  </Typography>
-                  <form onSubmit={handleSearchSubmit}>
-                    <Stack spacing={3}>
-                      <TextField
-                        fullWidth
-                        label="What are you looking for?"
-                        variant="outlined"
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        placeholder="Job title, keyword, or company"
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <SearchIcon />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Location"
-                        variant="outlined"
-                        value={location}
-                        onChange={handleLocationChange}
-                        placeholder="City, state, or zip code"
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <LocationOnIcon />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            <Grid item xs={12} md={7}>
+              <Box sx={{ position: 'relative' }}>
+                {/* Search Form */}
+                <Slide direction="left" in={animationTriggered.hero} timeout={800}>
+                  <SearchFormWrapper elevation={2} sx={{ zIndex: 5, maxWidth: '600px' }}>
+                    <Typography variant="h3" gutterBottom sx={{ mb: 3 }}>
+                      Search Across Categories
+                    </Typography>
+                    <form onSubmit={handleSearchSubmit}>
+                      <Stack spacing={3}>
+                        <TextField
+                          fullWidth
+                          label="What are you looking for?"
+                          variant="outlined"
+                          value={searchQuery}
+                          onChange={handleSearchChange}
+                          placeholder="Job title, keyword, or company"
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <SearchIcon />
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                        <TextField
+                          fullWidth
+                          label="Location"
+                          variant="outlined"
+                          value={location}
+                          onChange={handleLocationChange}
+                          placeholder="City, state, or zip code"
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <LocationOnIcon />
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                          <Chip 
+                            icon={<WorkIcon />} 
+                            label="Jobs" 
+                            color="primary" 
+                            variant="filled" 
+                            clickable
+                          />
+                          <Chip 
+                            icon={<HomeIcon />} 
+                            label="Housing" 
+                            clickable
+                          />
+                          <Chip 
+                            icon={<LocalCafeIcon />} 
+                            label="Cafes" 
+                            clickable
+                          />
+                          <Chip 
+                            icon={<LocalMallIcon />} 
+                            label="Shopping" 
+                            clickable
+                          />
+                        </Box>
+                        <Button 
+                          type="submit" 
+                          variant="contained" 
+                          color="secondary" 
+                          size="large"
+                          fullWidth
+                          sx={{ py: 1.5, color: 'white' }}
+                        >
+                          Search Now
+                        </Button>
+                      </Stack>
+                    </form>
+                  </SearchFormWrapper>
+                </Slide>
+                
+                {/* Location Pins - Cafe Card - moved to right side */}
+                <Box sx={{ position: 'absolute', top: '10%', right: '5%', zIndex: 4 }}>
+                  <Fade in={animationTriggered.hero} timeout={1500}>
+                    <Paper
+                      elevation={6}
+                      sx={{
+                        p: 2,
+                        borderRadius: '8px',
+                        width: '260px',
+                        position: 'relative',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.16)'
+                        },
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          left: '-8px',
+                          top: '20px',
+                          transform: 'rotate(45deg)',
+                          width: '16px',
+                          height: '16px',
+                          backgroundColor: 'white',
+                          boxShadow: '-2px 2px 2px rgba(0, 0, 0, 0.1)'
+                        }
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <Avatar sx={{ bgcolor: theme.palette.secondary.main, width: 36, height: 36 }}>
+                          <LocalCafeIcon fontSize="small" />
+                        </Avatar>
+                        <Box>
+                          <Typography variant="subtitle1" fontWeight={600}>
+                            Urban Brew Cafe
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                            <StarIcon sx={{ color: '#FFC107', fontSize: 16 }} />
+                            <StarIcon sx={{ color: '#FFC107', fontSize: 16 }} />
+                            <StarIcon sx={{ color: '#FFC107', fontSize: 16 }} />
+                            <StarIcon sx={{ color: '#FFC107', fontSize: 16 }} />
+                            <StarHalfIcon sx={{ color: '#FFC107', fontSize: 16 }} />
+                            <Typography variant="caption" sx={{ ml: 0.5 }}>
+                              (124 reviews)
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Box>
+                      
+                      <Box sx={{ display: 'flex', mt: 2 }}>
+                        <Box sx={{ 
+                          width: 80, 
+                          height: 80, 
+                          borderRadius: 2, 
+                          overflow: 'hidden',
+                          backgroundImage: 'url("https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80")',
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center'
+                        }} />
+                        <Box sx={{ ml: 1.5, flex: 1 }}>
+                          <Typography variant="body2" fontWeight={500}>
+                            Cozy workspace with fast WiFi
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                            Open until 10PM
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            <LocationOnIcon fontSize="small" sx={{ verticalAlign: 'text-bottom', fontSize: '1rem' }} />
+                            123 Market St, San Francisco
+                          </Typography>
+                        </Box>
+                      </Box>
+                      
+                      <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
                         <Chip 
-                          icon={<WorkIcon />} 
-                          label="Jobs" 
-                          color="primary" 
-                          variant="filled" 
-                          clickable
+                          label="Coffee" 
+                          size="small" 
+                          sx={{ 
+                            bgcolor: 'rgba(255, 152, 0, 0.1)', 
+                            color: theme.palette.secondary.main,
+                            fontWeight: 500,
+                            fontSize: '0.75rem'
+                          }} 
                         />
                         <Chip 
-                          icon={<HomeIcon />} 
-                          label="Housing" 
-                          clickable
+                          label="WiFi" 
+                          size="small" 
+                          sx={{ 
+                            bgcolor: 'rgba(30, 136, 229, 0.1)', 
+                            color: theme.palette.primary.main,
+                            fontWeight: 500,
+                            fontSize: '0.75rem'
+                          }} 
                         />
                         <Chip 
-                          icon={<LocalCafeIcon />} 
-                          label="Cafes" 
-                          clickable
+                          label="Quiet" 
+                          size="small" 
+                          sx={{ 
+                            bgcolor: 'rgba(76, 175, 80, 0.1)', 
+                            color: '#4CAF50',
+                            fontWeight: 500,
+                            fontSize: '0.75rem'
+                          }} 
                         />
+                      </Stack>
+                    </Paper>
+                  </Fade>
+                </Box>
+                
+                {/* Location Pins - Apartment Card - moved to right side */}
+                <Box sx={{ position: 'absolute', top: '40%', right: '5%', zIndex: 4 }}>
+                  <Fade in={animationTriggered.hero} timeout={2000}>
+                    <Paper
+                      elevation={6}
+                      sx={{
+                        p: 2,
+                        borderRadius: '8px',
+                        width: '270px',
+                        position: 'relative',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.16)'
+                        },
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          left: '-8px',
+                          top: '20px',
+                          transform: 'rotate(45deg)',
+                          width: '16px',
+                          height: '16px',
+                          backgroundColor: 'white',
+                          boxShadow: '-2px 2px 2px rgba(0, 0, 0, 0.1)'
+                        }
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                        <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 36, height: 36 }}>
+                          <HomeIcon fontSize="small" />
+                        </Avatar>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="subtitle1" fontWeight={600}>
+                            Sunny Two Bedroom
+                          </Typography>
+                          <Typography variant="h6" color="primary.main" fontWeight={600} sx={{ mt: 0.5 }}>
+                            $2,450/month
+                          </Typography>
+                        </Box>
                         <Chip 
-                          icon={<LocalMallIcon />} 
-                          label="Shopping" 
-                          clickable
+                          label="New" 
+                          size="small" 
+                          sx={{ 
+                            bgcolor: theme.palette.secondary.main, 
+                            color: 'white',
+                            fontWeight: 600
+                          }} 
                         />
                       </Box>
-                      <Button 
-                        type="submit" 
-                        variant="contained" 
-                        color="secondary" 
-                        size="large"
-                        fullWidth
-                        sx={{ py: 1.5, color: 'white' }}
-                      >
-                        Search Now
-                      </Button>
-                    </Stack>
-                  </form>
-                </SearchFormWrapper>
-              </Slide>
+                      
+                      <Box sx={{ 
+                        height: 130, 
+                        borderRadius: 2, 
+                        overflow: 'hidden', 
+                        mb: 1.5,
+                        backgroundImage: 'url("https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        position: 'relative'
+                      }}>
+                        <Box sx={{ 
+                          position: 'absolute', 
+                          bottom: 0, 
+                          right: 0, 
+                          display: 'flex',
+                          p: 1
+                        }}>
+                          <Typography 
+                            variant="caption" 
+                            sx={{ 
+                              bgcolor: 'rgba(0,0,0,0.7)', 
+                              color: 'white', 
+                              px: 1, 
+                              py: 0.5, 
+                              borderRadius: 1 
+                            }}
+                          >
+                            +6 photos
+                          </Typography>
+                        </Box>
+                      </Box>
+                      
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          <strong>2</strong> bed • <strong>1</strong> bath • <strong>850</strong> sq.ft
+                        </Typography>
+                      </Box>
+                      
+                      <Typography variant="body2" color="text.secondary">
+                        <LocationOnIcon fontSize="small" sx={{ verticalAlign: 'text-bottom', fontSize: '1rem' }} />
+                        456 Oak St, Mission District
+                      </Typography>
+                      
+                      <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
+                        <Chip 
+                          label="Pets OK" 
+                          size="small" 
+                          sx={{ 
+                            bgcolor: 'rgba(30, 136, 229, 0.1)', 
+                            color: theme.palette.primary.main,
+                            fontWeight: 500,
+                            fontSize: '0.75rem'
+                          }} 
+                        />
+                        <Chip 
+                          label="Washer/Dryer" 
+                          size="small" 
+                          sx={{ 
+                            bgcolor: 'rgba(76, 175, 80, 0.1)', 
+                            color: '#4CAF50',
+                            fontWeight: 500,
+                            fontSize: '0.75rem'
+                          }} 
+                        />
+                      </Stack>
+                    </Paper>
+                  </Fade>
+                </Box>
+                {/* Location Pins - Job Card - moved to right side at bottom */}
+                <Box sx={{ position: 'absolute', top: '70%', right: '5%', zIndex: 4 }}>
+                  <Fade in={animationTriggered.hero} timeout={2500}>
+                    <Paper
+                      elevation={6}
+                      sx={{
+                        p: 2,
+                        borderRadius: '8px',
+                        width: '250px',
+                        position: 'relative',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.16)'
+                        },
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          left: '-8px',
+                          top: '20px',
+                          transform: 'rotate(45deg)',
+                          width: '16px',
+                          height: '16px',
+                          backgroundColor: 'white',
+                          boxShadow: '-2px 2px 2px rgba(0, 0, 0, 0.1)'
+                        }
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <Avatar sx={{ bgcolor: '#4CAF50', width: 36, height: 36 }}>
+                          <WorkIcon fontSize="small" />
+                        </Avatar>
+                        <Box>
+                          <Typography variant="subtitle1" fontWeight={600}>
+                            Senior UX Designer
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            TechCorp Inc.
+                          </Typography>
+                        </Box>
+                      </Box>
+                      
+                      <Box sx={{ mt: 2 }}>
+                        <Typography variant="body2" fontWeight={500} color="#4CAF50">
+                          $120K - $150K • Full-time
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                          <LocationOnIcon fontSize="small" sx={{ verticalAlign: 'text-bottom', fontSize: '1rem' }} />
+                          Financial District, San Francisco
+                        </Typography>
+                        <Typography variant="body2" sx={{ mt: 1 }}>
+                          <strong>Requirements:</strong> 5+ years experience, portfolio, leadership skills
+                        </Typography>
+                      </Box>
+                      
+                      <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
+                        <Chip 
+                          label="Remote" 
+                          size="small" 
+                          sx={{ 
+                            bgcolor: 'rgba(76, 175, 80, 0.1)', 
+                            color: '#4CAF50',
+                            fontWeight: 500,
+                            fontSize: '0.75rem'
+                          }} 
+                        />
+                        <Chip 
+                          label="UX/UI" 
+                          size="small" 
+                          sx={{ 
+                            bgcolor: 'rgba(30, 136, 229, 0.1)', 
+                            color: theme.palette.primary.main,
+                            fontWeight: 500,
+                            fontSize: '0.75rem'
+                          }} 
+                        />
+                      </Stack>
+                    </Paper>
+                  </Fade>
+                </Box>
+              </Box>
             </Grid>
           </Grid>
         </Container>
+        
       </HeroSection>
 
       {/* Categories Section */}
